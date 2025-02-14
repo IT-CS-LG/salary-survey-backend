@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon --exec tsx server/index.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
+    "start": "node dist/server/index.js",
     "db:seed": "ts-node server/db/seeds/roleSeeder.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy"
