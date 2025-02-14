@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Benefits {
+  id                               String   @id
+  profileId                        String   @unique
+  annualBoxesPacked                String?
+  region                           String?
+  colaAdjustments                  Boolean
+  lastIncreasePercentage           String?
+  lastAdjustmentDate               String?
+  nextAdjustmentDate               String?
+  nextIncreasePercentage           String?
+  healthInsurance                  Boolean  @default(false)
+  dentalInsurance                  Boolean  @default(false)
+  visionInsurance                  Boolean  @default(false)
+  lifeInsurance                    Boolean  @default(false)
+  accidentalDeathInsurance         Boolean  @default(false)
+  deferredCompensation             Boolean  @default(false)
+  retirement401k                   Boolean  @default(false)
+  employeeHealthPremiumPercentage  String
+  dependentHealthPremiumPercentage String
+  firstYearPTO                     String
+  twoToFivePTO                     String
+  sixPlusPTO                       String
+  paidHolidays                     String
+  retirementPlan                   Boolean
+  employerMatchPercentage          String?
+  createdAt                        DateTime @default(now())
+  updatedAt                        DateTime
+  employeeContributionPercentage   String?
+  hasAdditionalTier                Boolean  @default(false)
+  secondTierEmployeeContribution   String?
+  secondTierEmployerMatch          String?
+  Profile                          Profile  @relation(fields: [profileId], references: [id])
+}
+
+model Profile {
+  id                String         @id @default(cuid())
+  companyName       String
+  contactFirstName  String
+  contactLastName   String
+  email            String
+  phone            String
+  roleDepartment   String    // Enum in the application layer
+  organizationType String    // Enum in the application layer
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  benefits         Benefits?
+  roleResponses    RoleResponse[]
+}
+
+model RoleResponse {
+  id                        String   @id
+  profileId                 String
+  title                     String
+  type                      String
+  payType                   String
+  sortOrder                 Int      @default(0)
+  isOwner                   Boolean  @default(false)
+  salary                    String?
+  hourlyWage                String?
+  bonus                     String?  // Made nullable since it's optional
+  yearsInPosition           String?  // Made nullable since it's optional
+  companyCar                Boolean  @default(false)
+  remote                    Boolean  @default(false)
+  retirement                Boolean  @default(false)
+  deferredComp              Boolean  @default(false)
+  hasMultipleEmployees      Boolean  @default(false)
+  hasCompensationDifference Boolean  @default(false)
+  numberOfEmployees         String?
+  combinesResponsibilities  Boolean  @default(false)
+  combinedRoles            String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime
+  Profile                  Profile  @relation(fields: [profileId], references: [id])
+
+  @@index([profileId])
+}
+
+model User {
+  id        String   @id
+  email     String   @unique
+  name      String?
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
