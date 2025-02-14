@@ -4,11 +4,6 @@ import profileRoutes from './routes/profiles.js';
 import benefitsRoutes from './routes/benefits.js';
 import rolesRoutes from './routes/roles.js';
 import { errorHandler } from './middleware/errorHandler.js';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;

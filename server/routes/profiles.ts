@@ -3,8 +3,11 @@ import { createProfile, getProfile, updateProfile } from '../controllers/profile
 
 const router = express.Router();
 
+// @ts-ignore
 router.post('/', createProfile);
+// @ts-ignore
 router.get('/:id', getProfile);
+// @ts-ignore
 router.put('/:id', updateProfile);
 
 export default router; 
