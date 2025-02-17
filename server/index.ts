@@ -13,15 +13,22 @@ app.use(cors({
   origin: '*', // Allow all origins in development
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
+  credentials: true
 }));
 
 // Basic test route
 app.get('/test', (req, res) => {
-  res.status(200).json({ 
-    status: 'success',
-    message: 'Backend API is running successfully!',
-    timestamp: new Date().toISOString()
-  });
+  try {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send({
+      message: 'API is working'
+    });
+  } catch (error) {
+    console.error('Test endpoint error:', error);
+    res.status(500).send({
+      error: 'Internal server error'
+    });
+  }
 });
 
 // Routes
