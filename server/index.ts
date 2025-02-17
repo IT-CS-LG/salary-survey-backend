@@ -16,8 +16,12 @@ app.use(cors({
 }));
 
 // Basic test route
-app.get('/', (req, res) => {
-  res.json({ message: 'Backend is running successfully!' });
+app.get('/test', (req, res) => {
+  res.status(200).json({ 
+    status: 'success',
+    message: 'Backend API is running successfully!',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Routes
