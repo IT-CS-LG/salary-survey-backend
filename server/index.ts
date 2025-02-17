@@ -10,25 +10,14 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors({
-  origin: '*', // Allow all origins in development
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true
+  allowedHeaders: ['Content-Type']
 }));
 
-// Basic test route
+// Simple test route
 app.get('/test', (req, res) => {
-  try {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).send({
-      message: 'API is working'
-    });
-  } catch (error) {
-    console.error('Test endpoint error:', error);
-    res.status(500).send({
-      error: 'Internal server error'
-    });
-  }
+  res.send('Hello from the backend!');
 });
 
 // Routes
