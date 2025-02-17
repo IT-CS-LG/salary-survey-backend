@@ -15,7 +15,17 @@ app.use(cors({
   allowedHeaders: ['Content-Type']
 }));
 
-// Simple test route
+// Root endpoint
+app.get('/', (req, res) => {
+  res.send('Welcome to the API');
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// Test endpoint
 app.get('/test', (req, res) => {
   res.send('Hello from the backend!');
 });
