@@ -15,6 +15,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type'],
 }));
 
+// Basic test route
+app.get('/', (req, res) => {
+  res.json({ message: 'Backend is running successfully!' });
+});
+
 // Routes
 app.use('/api/profiles', profileRoutes);
 app.use('/api/benefits', benefitsRoutes);
