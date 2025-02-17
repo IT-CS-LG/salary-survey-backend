@@ -1,25 +1,24 @@
-import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
-import { Prisma } from '@prisma/client';
+import { Request, Response, NextFunction } from 'express';
 
-export const errorHandler: ErrorRequestHandler = (
-  error: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  console.error(error);
+export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('Error details:', {
+    message: err.message,
+    stack: err.stack,
+    code: err.code,
+    name: err.name
+  });
 
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    res.status(400).json({
-      error: 'Database error',
-      message: error.message
+  if (err.name === 'PrismaClientInitializationError') {
+    return res.status(500).json({
+      error: 'Database connection error',
+      details: 'Could not connect to the database. Please check environment variables.'
     });
-    return;
   }
 
-  res.status(500).json({
-    error: 'Internal server error',
-    message: error.message
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal Server Error',
+    path: req.path,
+    method: req.method,
+    timestamp: new Date().toISOString()
   });
-  return;
 }; 
