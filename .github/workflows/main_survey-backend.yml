@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - wstfa-survey-backend
+name: Build and deploy Node.js app to Azure Web App - survey-backend
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -21,19 +21,22 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: '20.x'
 
       - name: npm install, build, and test
         run: |
           npm install
           npm run build --if-present
           npm run test --if-present
-      
+
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,19 +53,22 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
       
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FF7E51B4D07E4674B1E5F546E21F4D63 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C471A8B913224951961FCF7C18528CBF }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E0CDE6ADA76D4E339733684C5A40EAE6 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_634CCCE7031E4245B233A447CDC6D9BA }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F4E65FB2D5EA4C90B9CE893886C30977 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_75095B48F0684582BBC5D08249318451 }}
 
       - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
         with:
-          app-name: 'wstfa-survey-backend'
+          app-name: 'survey-backend'
           slot-name: 'Production'
           package: .
           
