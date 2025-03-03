@@ -20,9 +20,19 @@ export async function createProfile(req: Request, res: Response) {
     console.log('Received profile data:', req.body);
     const validatedData = ProfileSchema.parse(req.body);
     
-    // Check if profile already exists with this email
+    // Check if profile already exists with exact match on all fields
     const existingProfile = await prisma.profile.findFirst({
-      where: { email: validatedData.email }
+      where: { 
+        AND: [
+          { email: validatedData.email },
+          { companyName: validatedData.companyName },
+          { contactFirstName: validatedData.contactFirstName },
+          { contactLastName: validatedData.contactLastName },
+          { phone: validatedData.phone },
+          { roleDepartment: validatedData.roleDepartment },
+          { organizationType: validatedData.organizationType }
+        ]
+      }
     });
 
     if (existingProfile) {
