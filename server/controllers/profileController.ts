@@ -28,9 +28,7 @@ export async function createProfile(req: Request, res: Response) {
           { companyName: validatedData.companyName },
           { contactFirstName: validatedData.contactFirstName },
           { contactLastName: validatedData.contactLastName },
-          { phone: validatedData.phone },
-          { roleDepartment: validatedData.roleDepartment },
-          { organizationType: validatedData.organizationType }
+          { phone: validatedData.phone }
         ]
       }
     });
