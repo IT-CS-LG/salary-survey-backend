@@ -11,6 +11,7 @@ const BenefitsSchema = z.object({
   colaAdjustments: z.boolean(),
   lastIncreasePercentage: z.string().nullable(),
   lastAdjustmentDate: z.string().nullable(),
+  isNextAdjustmentDateUncertain: z.boolean(),
   nextAdjustmentDate: z.string().nullable(),
   nextIncreasePercentage: z.string().nullable(),
   healthInsurance: z.boolean(),
@@ -22,9 +23,16 @@ const BenefitsSchema = z.object({
   retirement401k: z.boolean(),
   employeeHealthPremiumPercentage: z.string(),
   dependentHealthPremiumPercentage: z.string(),
-  firstYearPTO: z.string(),
-  twoToFivePTO: z.string(),
-  sixPlusPTO: z.string(),
+  combinedPtoSickLeave: z.boolean(),
+  firstYearPTO: z.string().nullable(),
+  twoToFivePTO: z.string().nullable(),
+  sixPlusPTO: z.string().nullable(),
+  firstYearSickLeave: z.string().nullable(),
+  twoToFiveSickLeave: z.string().nullable(),
+  sixPlusSickLeave: z.string().nullable(),
+  firstYearVacation: z.string().nullable(),
+  twoToFiveVacation: z.string().nullable(),
+  sixPlusVacation: z.string().nullable(),
   paidHolidays: z.string(),
   retirementPlan: z.boolean(),
   employerMatchPercentage: z.string().nullable(),
@@ -44,12 +52,52 @@ export async function createBenefits(req: Request, res: Response) {
       where: { profileId: validatedData.profileId }
     });
 
+    // Convert null values to undefined for Prisma and ensure required fields
+    const benefitsData = {
+      profileId: validatedData.profileId,
+      colaAdjustments: validatedData.colaAdjustments,
+      isNextAdjustmentDateUncertain: validatedData.isNextAdjustmentDateUncertain,
+      healthInsurance: validatedData.healthInsurance,
+      dentalInsurance: validatedData.dentalInsurance,
+      visionInsurance: validatedData.visionInsurance,
+      lifeInsurance: validatedData.lifeInsurance,
+      accidentalDeathInsurance: validatedData.accidentalDeathInsurance,
+      deferredCompensation: validatedData.deferredCompensation,
+      retirement401k: validatedData.retirement401k,
+      employeeHealthPremiumPercentage: validatedData.employeeHealthPremiumPercentage,
+      dependentHealthPremiumPercentage: validatedData.dependentHealthPremiumPercentage,
+      combinedPtoSickLeave: validatedData.combinedPtoSickLeave,
+      paidHolidays: validatedData.paidHolidays,
+      retirementPlan: validatedData.retirementPlan,
+      hasAdditionalTier: validatedData.hasAdditionalTier,
+      // Optional fields - set to empty string if null/undefined
+      annualBoxesPacked: validatedData.annualBoxesPacked || '',
+      region: validatedData.region || '',
+      lastIncreasePercentage: validatedData.lastIncreasePercentage || '',
+      lastAdjustmentDate: validatedData.lastAdjustmentDate || '',
+      nextAdjustmentDate: validatedData.nextAdjustmentDate || '',
+      nextIncreasePercentage: validatedData.nextIncreasePercentage || '',
+      firstYearPTO: validatedData.firstYearPTO || '',
+      twoToFivePTO: validatedData.twoToFivePTO || '',
+      sixPlusPTO: validatedData.sixPlusPTO || '',
+      firstYearSickLeave: validatedData.firstYearSickLeave || '',
+      twoToFiveSickLeave: validatedData.twoToFiveSickLeave || '',
+      sixPlusSickLeave: validatedData.sixPlusSickLeave || '',
+      firstYearVacation: validatedData.firstYearVacation || '',
+      twoToFiveVacation: validatedData.twoToFiveVacation || '',
+      sixPlusVacation: validatedData.sixPlusVacation || '',
+      employerMatchPercentage: validatedData.employerMatchPercentage || '',
+      employeeContributionPercentage: validatedData.employeeContributionPercentage || '',
+      secondTierEmployerMatch: validatedData.secondTierEmployerMatch || '',
+      secondTierEmployeeContribution: validatedData.secondTierEmployeeContribution || '',
+    };
+
     if (existingBenefits) {
       // If exists, update instead of create
       const benefits = await prisma.benefits.update({
         where: { profileId: validatedData.profileId },
         data: {
-          ...validatedData,
+          ...benefitsData,
           updatedAt: new Date(),
         }
       });
@@ -59,35 +107,9 @@ export async function createBenefits(req: Request, res: Response) {
     // If doesn't exist, create new
     const benefits = await prisma.benefits.create({
       data: {
-        profileId: validatedData.profileId,
-        annualBoxesPacked: validatedData.annualBoxesPacked,
-        region: validatedData.region,
-        colaAdjustments: validatedData.colaAdjustments,
-        lastIncreasePercentage: validatedData.lastIncreasePercentage,
-        lastAdjustmentDate: validatedData.lastAdjustmentDate,
-        nextAdjustmentDate: validatedData.nextAdjustmentDate,
-        nextIncreasePercentage: validatedData.nextIncreasePercentage,
-        healthInsurance: validatedData.healthInsurance,
-        dentalInsurance: validatedData.dentalInsurance,
-        visionInsurance: validatedData.visionInsurance,
-        lifeInsurance: validatedData.lifeInsurance,
-        accidentalDeathInsurance: validatedData.accidentalDeathInsurance,
-        deferredCompensation: validatedData.deferredCompensation,
-        retirement401k: validatedData.retirement401k,
-        employeeHealthPremiumPercentage: validatedData.employeeHealthPremiumPercentage,
-        dependentHealthPremiumPercentage: validatedData.dependentHealthPremiumPercentage,
-        firstYearPTO: validatedData.firstYearPTO,
-        twoToFivePTO: validatedData.twoToFivePTO,
-        sixPlusPTO: validatedData.sixPlusPTO,
-        paidHolidays: validatedData.paidHolidays,
-        retirementPlan: validatedData.retirementPlan,
-        employerMatchPercentage: validatedData.employerMatchPercentage,
-        employeeContributionPercentage: validatedData.employeeContributionPercentage,
-        hasAdditionalTier: validatedData.hasAdditionalTier,
-        secondTierEmployerMatch: validatedData.secondTierEmployerMatch,
-        secondTierEmployeeContribution: validatedData.secondTierEmployeeContribution,
+        ...benefitsData,
         id: crypto.randomUUID(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
     });
     

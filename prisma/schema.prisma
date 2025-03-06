@@ -15,6 +15,7 @@ model Benefits {
   colaAdjustments                  Boolean
   lastIncreasePercentage           String?
   lastAdjustmentDate               String?
+  isNextAdjustmentDateUncertain    Boolean  @default(false)
   nextAdjustmentDate               String?
   nextIncreasePercentage           String?
   healthInsurance                  Boolean  @default(false)
@@ -26,30 +27,37 @@ model Benefits {
   retirement401k                   Boolean  @default(false)
   employeeHealthPremiumPercentage  String
   dependentHealthPremiumPercentage String
-  firstYearPTO                     String
-  twoToFivePTO                     String
-  sixPlusPTO                       String
+  combinedPtoSickLeave            Boolean  @default(false)
+  firstYearPTO                     String?
+  twoToFivePTO                     String?
+  sixPlusPTO                       String?
+  firstYearSickLeave              String?
+  twoToFiveSickLeave              String?
+  sixPlusSickLeave                String?
+  firstYearVacation               String?
+  twoToFiveVacation               String?
+  sixPlusVacation                 String?
   paidHolidays                     String
   retirementPlan                   Boolean
   employerMatchPercentage          String?
-  createdAt                        DateTime @default(now())
-  updatedAt                        DateTime
   employeeContributionPercentage   String?
   hasAdditionalTier                Boolean  @default(false)
-  secondTierEmployeeContribution   String?
   secondTierEmployerMatch          String?
+  secondTierEmployeeContribution   String?
+  createdAt                        DateTime @default(now())
+  updatedAt                        DateTime
   Profile                          Profile  @relation(fields: [profileId], references: [id])
 }
 
 model Profile {
-  id                String         @id @default(cuid())
-  companyName       String
-  contactFirstName  String
-  contactLastName   String
+  id               String         @id @default(cuid())
+  companyName      String
+  contactFirstName String
+  contactLastName  String
   email            String
   phone            String
-  roleDepartment   String    // Enum in the application layer
-  organizationType String    // Enum in the application layer
+  roleDepartment   String
+  organizationType String
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   benefits         Benefits?
@@ -59,15 +67,11 @@ model Profile {
 model RoleResponse {
   id                        String   @id
   profileId                 String
-  title                     String
-  type                      String
-  payType                   String
-  sortOrder                 Int      @default(0)
   isOwner                   Boolean  @default(false)
   salary                    String?
   hourlyWage                String?
-  bonus                     String?  // Made nullable since it's optional
-  yearsInPosition           String?  // Made nullable since it's optional
+  bonus                     String?
+  yearsInPosition           String?
   companyCar                Boolean  @default(false)
   remote                    Boolean  @default(false)
   retirement                Boolean  @default(false)
@@ -76,10 +80,14 @@ model RoleResponse {
   hasCompensationDifference Boolean  @default(false)
   numberOfEmployees         String?
   combinesResponsibilities  Boolean  @default(false)
-  combinedRoles            String?
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime
-  Profile                  Profile  @relation(fields: [profileId], references: [id])
+  combinedRoles             String?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime
+  payType                   String
+  title                     String
+  type                      String
+  sortOrder                 Int      @default(0)
+  Profile                   Profile  @relation(fields: [profileId], references: [id])
 
   @@index([profileId])
 }
